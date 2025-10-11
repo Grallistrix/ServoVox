@@ -1,0 +1,23 @@
+# LLM
+transformers>=4.40.0
+torch>=2.2.0
+accelerate>=0.29.0
+bitsandbytes>=0.43.0
+
+# Coqui STT
+#coqui-stt==1.1.4
+
+# Coqui TTS
+coqui-tts==0.27.2
+
+# Audio
+sounddevice
+pydub
+numpy
+
+
+# Other
+setuptools 
+wheel
+notebook #TODO: delete once testing is over
+ipykernel # TODO: delete once testing is over

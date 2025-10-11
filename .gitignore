@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env/
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# Audio / temp
+*.wav
+*.mp3
+*.ogg
+
+# Model downloads / cache
+*.bin
+*.gguf
+*.pt
+*.ckpt
+*.safetensors
+
+# IDE
+.vscode/
+.idea/
+*.log
