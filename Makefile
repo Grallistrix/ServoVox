@@ -16,6 +16,9 @@ install:
 	pip install --upgrade pip setuptools wheel && \
 	pip install -r $(REQ) --extra-index-url https://download.pytorch.org/whl/cu121
 	curl https://ollama.com/install.sh | sh
+	sudo apt install -y libasound2-dev
+	pip install -r requirements.txt
+
 
 serve:
 	ollama serve
