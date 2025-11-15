@@ -14,7 +14,7 @@ coqui-tts==0.27.2
 sounddevice
 pydub
 numpy
-simpleaudio
+#simpleaudio
 
 # Other
 setuptools 
