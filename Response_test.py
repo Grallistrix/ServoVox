@@ -2,6 +2,7 @@
 from TTS.api import TTS
 import requests
 import whisper
+import os, subprocess
 
 model = whisper.load_model("turbo")
 
@@ -37,20 +38,18 @@ response = requests.post(
     json={"model": "llama3:latest", "prompt": query}
 )
 print("Query: "+query+"\n")
-print(response.json())
-#print("Response:\n"+response.json()["choices"][0]["text"])
+print("Response:\n"+response.json()["choices"][0]["text"])
 
 #response to text
-#text = response.json()["choices"][0]["text"]
+text = response.json()["choices"][0]["text"]
 
-#print(f"Text {text}")
-#print("Saving the generated file")
-#out_path = "quickfox.wav"
-#tts.tts_to_file(text=text, file_path=out_path)
+print(f"Text {text}")
+print("Saving the generated file")
+out_path = "quickfox.wav"
+tts.tts_to_file(text=text, file_path=out_path)
 
 #play response
-#print("Playing - through Windows")
-#import os, subprocess
-#win_path = subprocess.check_output(["wslpath", "-w", out_path]).decode().strip()
-#subprocess.run(["cmd.exe", "/C", "start", "", win_path])
+print("Playing - through Windows")
+win_path = subprocess.check_output(["wslpath", "-w", out_path]).decode().strip()
+subprocess.run(["cmd.exe", "/C", "start", "", win_path])
 
