@@ -37,7 +37,7 @@ response = requests.post(
     json={"model": "llama3.1:8b", "prompt": query}
 )
 print("Query: "+query+"\n")
-print("Response:\n"+response.json())#["choices"][0]["text"])
+print("Response:\n"+response.json()["choices"][0]["text"])
 
 #response to text
 #text = response.json()["choices"][0]["text"]
