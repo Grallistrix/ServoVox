@@ -15,3 +15,4 @@ response = requests.post(
     json={"model": "llama3.1:8b", "prompt": prompt}
 )
 print(response.json())
+
