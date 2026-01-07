@@ -29,7 +29,7 @@ tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=True, 
 #prompt
 base_prompt = "(You're an archivist servitor in the world of Warhammer 40k, a techpriest in querying you on your knowledge on history of Imperium of Men. Be robotic and swift in reply. Be very accurate. If there things you're unsure or don't know, say [Records Missing]. The asnwers must be short. 3 sentences) "
 prompt="Who is  the 5th Chaos God Malal?"
-query= base_prompt+result
+query= base_prompt+result.text
 
 #get ollama response
 response = requests.post(
