@@ -4,6 +4,11 @@ import requests
 import whisper
 import os, subprocess
 
+from langchain_ollama import ChatOllama
+from langchain_core.prompts import PromptTemplate
+
+from RAG import retriever
+
 model = whisper.load_model("turbo")
 
 # load audio and pad/trim it to fit 30 seconds
@@ -28,17 +33,37 @@ print(result.text)
 tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=True, gpu=True)
 
 #prompt
-base_prompt = "(You're an archivist servitor in the world of Warhammer 40k, a techpriest in querying you on your knowledge on history of Imperium of Men. Be robotic and swift in reply. Be very accurate. If there things you're unsure or don't know, say [Records Missing]. The asnwers must be short. 3 sentences) "
-prompt="Who is  the 5th Chaos God Malal?"
-query= base_prompt+result.text
 
-#get ollama response
-response = requests.post(
-    "http://localhost:11434/v1/completions",
-    json={"model": "llama3:latest", "prompt": query}
+prompt = PromptTemplate(
+    template="""
+(You're an archivist servitor in the world of Warhammer 40k, a techpriest in querying you on your knowledge on history of Imperium of Men. Be robotic and swift in reply. Be very accurate. If there things you're unsure or don't know, say [Records Missing]. The asnwers must be short. 3 sentences) 
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+""",
+    input_variables=["context", "question"],
 )
-print("Query: "+query+"\n")
-print("Response:\n"+response.json()["choices"][0]["text"])
+
+llm = ChatOllama(model="llama3")
+
+qa_chain = prompt | llm
+
+re_data = retriever.invoke(result.text)
+
+context = "\n\n".join([r.page_content for r in re_data])
+
+for r in re_data:
+    print("text below")
+    print(r.page_content)
+
+response = qa_chain.invoke({"context": context, "question": result.text})
+
+print(response)
 
 #response to text
 text = response.json()["choices"][0]["text"]

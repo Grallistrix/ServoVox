@@ -1,14 +1,12 @@
-from langchain_ollama import ChatOllama
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain_unstructured import UnstructuredLoader
-from langchain_core.prompts import PromptTemplate
 from langchain_community.vectorstores.utils import filter_complex_metadata
-import nltk
+#import nltk
 import os
 from pathlib import Path
 
-nltk.data.path.append("/home/wojzub2/nltk_data")
+#nltk.data.path.append("/home/wojzub2/nltk_data")
 
 # Dostęp do plików
 folder_path = Path("../../texts")
@@ -33,46 +31,24 @@ clean_docs = filter_complex_metadata(docs)
 # Embedding do bazy
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
-db = Chroma.from_documents(
-    clean_docs,
-    embeddings,
-    persist_directory="./chroma_db"
-)
+db_exist = os.path.exists("./chroma_db")
 
-prompt = PromptTemplate(
-    template="""
-You are a helpful assistant.
-
-Context:
-{context}
-
-Question:
-{question}
-
-Answer:
-""",
-    input_variables=["context", "question"],
-)
-
-llm = ChatOllama(model="llama3")
-
-qa_chain = prompt | llm
-
-query = "tell me about rogal dorn"
+if db_exist:
+    db = Chroma(
+        embeddings,
+        persist_directory="./chroma_db"
+    )
+else: 
+    db = Chroma.from_documents(
+        clean_docs,
+        embeddings,
+        persist_directory="./chroma_db"
+    )
 
 retriever = db.as_retriever(
     search_type="mmr",
     search_kwargs={"k": 6}
     )
 
-re_data = retriever.invoke(query)
 
-context = "\n\n".join([r.page_content for r in re_data])
-
-for r in re_data:
-    print("text below")
-    print(r.page_content)
-
-answer = qa_chain.invoke({"context": context, "question": query})
-print(answer)
 
