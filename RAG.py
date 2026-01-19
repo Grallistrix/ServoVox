@@ -26,7 +26,11 @@ loader = UnstructuredLoader(
 
 docs = loader.load()
 
+
 clean_docs = filter_complex_metadata(docs)
+
+for d in clean_docs:
+    print(d)
 
 #embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
@@ -37,7 +41,7 @@ db = Chroma.from_documents(
     persist_directory="./chroma_db"
 )
 
-retriever = db.as_retriever(search_kwargs={"k": 4, "fetch_k": 20})
+retriever = db.as_retriever(search_kwargs={"k": 4})
 
 prompt = PromptTemplate(
     template="""
@@ -58,7 +62,7 @@ llm = ChatOllama(model="llama3")
 
 qa_chain = prompt | llm
 
-query = "tell me about tyrion"
+query = "tell me about rogal dorn"
 
 re_data = retriever.invoke(query)
 
