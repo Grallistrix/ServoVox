@@ -3,10 +3,10 @@ from langchain_chroma import Chroma
 
 from langchain_unstructured import UnstructuredLoader
 import nltk
-
-
 import os
 from pathlib import Path
+
+nltk.data.path.append("/home/wojzub2/nltk_data")
 
 folder_path = Path("../../texts")
 
