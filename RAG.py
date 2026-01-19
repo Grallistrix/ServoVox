@@ -1,7 +1,7 @@
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 
-from langchain.documents_loader import TextLoader
+from langchain_unstructured import UnstructuredLoader
 import os
 from pathlib import Path
 
@@ -12,7 +12,7 @@ files = [
     if p.is_file()
 ]
 
-loader = TextLoader(
+loader = UnstructuredLoader(
     files,
     mode="single",
     strategy="fast"
