@@ -14,9 +14,8 @@ files = [
 
 loader = UnstructuredLoader(
     files,
-    chunking_strategy="basic",
-    max_characters=1000000,
-    include_orig_elements=False,
+    mode="single",
+    strategy="fast"
    )
 
 docs = loader.load()
