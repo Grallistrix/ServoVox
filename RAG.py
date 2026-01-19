@@ -1,7 +1,6 @@
 from langchain_ollama import ChatOllama
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
-from langchain_core.retrievers import VectorStoreRetriever
 from langchain_unstructured import UnstructuredLoader
 from langchain_core.prompts import PromptTemplate
 from langchain_core.chains import LLMChain
@@ -27,10 +26,8 @@ loader = UnstructuredLoader(
 
 docs = loader.load()
 
+
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
-
-
-retriever = VectorStoreRetriever(vectorstore=db)
 
 db = Chroma.from_documents(
     docs,
@@ -39,6 +36,8 @@ db = Chroma.from_documents(
 )
 
 db.persist()
+
+retriever = db.as_retriever(search_kwargs={"k": 4})
 
 prompt = PromptTemplate(
     template="""
