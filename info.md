@@ -26,5 +26,8 @@ pip install langchain langchain-ollama langchain-chroma
 ollama pull mxbai-embed-large
 
 pip install "langchain-unstructured[local]"
+pip install langchain-community
+pip install "unstructured[all-docs]"
+pip install -U unstructured
 ```
 
