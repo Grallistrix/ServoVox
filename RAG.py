@@ -59,7 +59,7 @@ qa_chain = prompt | llm
 
 query = "tell me about emperor of mankind"
 
-docs = retriever.get_relevant_documents(query)
+docs = retriever._get_relevant_documents(query)
 
 context = "\n\n".join([d.page_content for d in docs])
 
