@@ -18,12 +18,8 @@ files = [
 loader = UnstructuredLoader(
     files,
    )
-pages = []
-for doc in loader.lazy_load():
-    pages.append(doc)
 
-pages[0]
-#docs = loader.load()
-docs = pages
+docs = loader.load()
+
 print("Number of LangChain documents:", len(docs))
 print("Length of text in the document:", len(docs[0].page_content))
