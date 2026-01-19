@@ -30,7 +30,7 @@ clean_docs = filter_complex_metadata(docs)
 
 embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
 
-db = Chroma(
+db = Chroma.from_documents(
     clean_docs,
     embeddings,
     persist_directory="./chroma_db"
