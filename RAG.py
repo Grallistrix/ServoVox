@@ -37,7 +37,7 @@ db = Chroma.from_documents(
     persist_directory="./chroma_db"
 )
 
-retriever = db.as_retriever(search_kwargs={"k": 5})
+retriever = db.as_retriever(search_kwargs={"k": 4, "fetch_k": 20})
 
 prompt = PromptTemplate(
     template="""
@@ -60,9 +60,9 @@ qa_chain = prompt | llm
 
 query = "tell me about tyrion"
 
-docs = retriever.invoke(query)
+re_data = retriever.invoke(query)
 
-context = "\n\n".join([d.page_content for d in docs])
+context = "\n\n".join([r.page_content for r in re_data])
 
 for d in docs:
     print("text below")
