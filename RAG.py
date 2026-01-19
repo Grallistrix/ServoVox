@@ -1,7 +1,7 @@
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 
-from langchain_unstructured import TextLoader
+from langchain.documents_loader import TextLoader
 import os
 from pathlib import Path
 
