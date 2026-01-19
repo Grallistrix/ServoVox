@@ -37,7 +37,7 @@ db = Chroma.from_documents(
     persist_directory="./chroma_db"
 )
 
-retriever = db.as_retriever(search_kwargs={"k": 4})
+retriever = db.as_retriever(search_kwargs={"k": 5})
 
 prompt = PromptTemplate(
     template="""
@@ -65,6 +65,7 @@ docs = retriever.invoke(query)
 context = "\n\n".join([d.page_content for d in docs])
 
 for d in docs:
+    print("text below")
     print(d.page_content)
 
 answer = qa_chain.invoke({"context": context, "question": query})
