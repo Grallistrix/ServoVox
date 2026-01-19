@@ -17,8 +17,6 @@ files = [
 
 loader = UnstructuredLoader(
     files,
-    mode="single",
-    strategy="fast"
    )
 pages = []
 for doc in loader.lazy_load():
@@ -26,6 +24,6 @@ for doc in loader.lazy_load():
 
 pages[0]
 #docs = loader.load()
-
+docs = pages
 print("Number of LangChain documents:", len(docs))
 print("Length of text in the document:", len(docs[0].page_content))
