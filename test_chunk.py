@@ -1,10 +1,6 @@
 from langchain_unstructured import UnstructuredLoader
-from langchain_ollama import ChatOllama
-from langchain_ollama import OllamaEmbeddings
-from langchain_chroma import Chroma
 from langchain_unstructured import UnstructuredLoader
-from langchain_core.prompts import PromptTemplate
-from langchain_community.vectorstores.utils import filter_complex_metadata
+from unstructured.cleaners.core import clean_extra_whitespace
 import nltk
 import os
 from pathlib import Path
@@ -16,11 +12,14 @@ files = [
     if p.is_file()
 ]
 
+print(files[0])
+
 loader = UnstructuredLoader(
     files[0],
     chunking_strategy="basic",
-    max_characters=10000,
+    max_characters=2000,
     include_orig_elements=False,
+    post_processors=[clean_extra_whitespace],
 )
 
 docs = loader.load()
