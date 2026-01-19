@@ -8,3 +8,10 @@ files = [
 ]
 
 print(files)
+
+import nltk
+try:
+    nltk.data.find("tokenizers/punkt")
+    print("NLTK punkt found!")
+except Exception as e:
+    print("NOT FOUND", e)
