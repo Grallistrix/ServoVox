@@ -10,6 +10,7 @@ from pathlib import Path
 
 nltk.data.path.append("/home/wojzub2/nltk_data")
 
+# Dostęp do plików
 folder_path = Path("../../texts")
 
 files = [
@@ -17,6 +18,7 @@ files = [
     if p.is_file()
 ]
 
+# Ładowanie plików
 loader = UnstructuredLoader(
     files[0:10],
     chunking_strategy="basic",
@@ -28,7 +30,7 @@ docs = loader.load()
 
 clean_docs = filter_complex_metadata(docs)
 
-#embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
+# Embedding do bazy
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
 db = Chroma.from_documents(
@@ -36,7 +38,6 @@ db = Chroma.from_documents(
     embeddings,
     persist_directory="./chroma_db"
 )
-
 
 prompt = PromptTemplate(
     template="""
@@ -59,7 +60,10 @@ qa_chain = prompt | llm
 
 query = "tell me about rogal dorn"
 
-retriever = db.as_retriever(search_kwargs={"k": 4})
+retriever = db.as_retriever(
+    search_type="mmr",
+    search_kwargs={"k": 6}
+    )
 
 re_data = retriever.invoke(query)
 
