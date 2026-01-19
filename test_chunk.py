@@ -17,7 +17,7 @@ files = [
 ]
 
 loader = UnstructuredLoader(
-    files,
+    files[0],
     chunking_strategy="basic",
     max_characters=10000,
     include_orig_elements=False,
