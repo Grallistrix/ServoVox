@@ -16,7 +16,7 @@ files = [
     if p.is_file()
 ]
 
-print (files[0])
+#print (files[0])
 
 # Ładowanie plików
 loader = UnstructuredLoader(
