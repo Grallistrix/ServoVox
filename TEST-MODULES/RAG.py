@@ -9,7 +9,7 @@ from pathlib import Path
 #nltk.data.path.append("/home/wojzub2/nltk_data")
 
 # Dostęp do plików
-folder_path = Path("../../../texts")
+folder_path = Path("../../texts")
 
 files = [
     p for p in folder_path.rglob("*")
