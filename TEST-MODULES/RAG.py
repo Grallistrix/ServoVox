@@ -16,6 +16,8 @@ files = [
     if p.is_file()
 ]
 
+print (files[0])
+
 # Ładowanie plików
 loader = UnstructuredLoader(
     files[0:10],
@@ -32,6 +34,10 @@ clean_docs = filter_complex_metadata(docs)
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
 db_exist = os.path.exists("../chroma_db")
+
+print (db_exist)
+
+print (os.path.exists("./chroma_db"))
 
 if db_exist:
     db = Chroma(
