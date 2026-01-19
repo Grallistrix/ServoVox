@@ -1,8 +1,10 @@
 from langchain_ollama import ChatOllama
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
-from langchain.chains import RetrievalQA
+from langchain_core.retrievers import VectorStoreRetriever
 from langchain_unstructured import UnstructuredLoader
+from langchain_core.prompts import PromptTemplate
+from langchain_core.chains import LLMChain
 import nltk
 import os
 from pathlib import Path
@@ -27,6 +29,9 @@ docs = loader.load()
 
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
+
+retriever = VectorStoreRetriever(vectorstore=db)
+
 db = Chroma.from_documents(
     docs,
     embeddings,
@@ -35,17 +40,31 @@ db = Chroma.from_documents(
 
 db.persist()
 
-db = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
+prompt = PromptTemplate(
+    template="""
+You are a helpful assistant.
 
-retriever = db.as_retriever(search_kwargs={"k": 5})
+Context:
+{context}
 
-llm = ChatOllama(model="llama3.1")
-qa = RetrievalQA.from_chain_type(
-    llm=llm,
-    retriever=retriever,
-    chain_type="stuff"
+Question:
+{question}
+
+Answer:
+""",
+    input_variables=["context", "question"],
 )
 
+llm = ChatOllama(model="llama3")
+
+qa_chain = LLMChain(llm=llm, prompt=prompt)
+
 query = "tell me about emperor of mankind"
-print(qa.run(query))
+
+docs = retriever.get_relevant_documents(query)
+
+context = "\n\n".join([d.page_content for d in docs])
+
+answer = qa_chain.run({"context": context, "question": query})
+print(answer)
 
