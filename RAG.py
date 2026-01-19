@@ -1,4 +1,4 @@
-from langchain.llms import Ollama
+from langchain_ollama import OllamaChat
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain.chains import RetrievalQA
@@ -39,8 +39,7 @@ db = Chroma(persist_directory="./chroma_db", embedding_function=embeddings)
 
 retriever = db.as_retriever(search_kwargs={"k": 5})
 
-llm = Ollama(model="llama3.1")  
-
+llm = OllamaChat(model="llama3.1")
 qa = RetrievalQA.from_chain_type(
     llm=llm,
     retriever=retriever,
