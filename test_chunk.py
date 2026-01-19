@@ -17,7 +17,7 @@ files = [
 ]
 
 loader = UnstructuredLoader(
-    "./example_data/layout-parser-paper.pdf",
+    files,
     chunking_strategy="basic",
     max_characters=10000,
     include_orig_elements=False,
