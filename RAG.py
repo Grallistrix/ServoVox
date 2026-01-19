@@ -18,7 +18,7 @@ files = [
 ]
 
 loader = UnstructuredLoader(
-    files,
+    files[0],
     chunking_strategy="basic",
     max_characters=2000,
     include_orig_elements=False,
@@ -28,7 +28,7 @@ docs = loader.load()
 
 clean_docs = filter_complex_metadata(docs)
 
-embeddings = OllamaEmbeddings(model="mxbai-embed-large")
+embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
 
 db = Chroma.from_documents(
     clean_docs,
