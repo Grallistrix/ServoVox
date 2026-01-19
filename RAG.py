@@ -3,7 +3,7 @@ from langchain_chroma import Chroma
 
 from langchain_unstructured import UnstructuredLoader
 import nltk
-nltk.data.path.append("/home/wojzub2/nltk_data")
+nltk.data.path.append("../../nltk_data")
 
 import os
 from pathlib import Path
