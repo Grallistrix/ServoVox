@@ -28,7 +28,8 @@ docs = loader.load()
 
 clean_docs = filter_complex_metadata(docs)
 
-embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
+#embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
+embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
 db = Chroma.from_documents(
     clean_docs,
