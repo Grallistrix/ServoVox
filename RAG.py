@@ -63,6 +63,9 @@ docs = retriever.invoke(query)
 
 context = "\n\n".join([d.page_content for d in docs])
 
-answer = qa_chain.run({"context": context, "question": query})
+for d in docs:
+    print(d.page_ceonent)
+
+answer = qa_chain.invoke({"context": context, "question": query})
 print(answer)
 
