@@ -26,11 +26,7 @@ loader = UnstructuredLoader(
 
 docs = loader.load()
 
-
 clean_docs = filter_complex_metadata(docs)
-
-for d in clean_docs:
-    print(d)
 
 #embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
