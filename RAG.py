@@ -26,15 +26,29 @@ loader = UnstructuredLoader(
 
 docs = loader.load()
 
+print("Number of LangChain documents:", len(docs))
+print("Length of text in the document:", len(docs[0].page_content))
+
 clean_docs = filter_complex_metadata(docs)
 
 embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
+
+print("Number of LangChain documents:", len(clean_docs))
+print("Length of text in the document:", len(clean_docs[0].page_content))
 
 db = Chroma.from_documents(
     clean_docs,
     embeddings,
     persist_directory="./chroma_db"
 )
+
+print("Total vectors:", db._collection.count())
+
+results = db._collection.get(
+    include=["documents", "metadatas", "ids"]
+)
+
+print(results)
 
 retriever = db.as_retriever(search_kwargs={"k": 4})
 
