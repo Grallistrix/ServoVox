@@ -3,11 +3,17 @@ from langchain_chroma import Chroma
 from lnagchain_core.documents import documents
 from langchain_unstructured import UnstructuredLoader
 import os
+from pathlib import Path
 
-files = [""]
+folder_path = Path("../../texts")
+
+files = [
+    p.name for p in folder_path.rglob("*")
+    if p.is_file()
+]
 
 loader = UnstructuredLoader(
-    file_paths,
+    files,
     chunking_strategy="basic",
     max_characters=1000000,
     include_orig_elements=False,
