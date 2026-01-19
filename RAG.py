@@ -36,8 +36,6 @@ db = Chroma.from_documents(
     persist_directory="./chroma_db"
 )
 
-db.persist()
-
 retriever = db.as_retriever(search_kwargs={"k": 4})
 
 prompt = PromptTemplate(
