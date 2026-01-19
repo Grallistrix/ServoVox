@@ -20,7 +20,7 @@ files = [
 loader = UnstructuredLoader(
     files[0:10],
     chunking_strategy="basic",
-    max_characters=2000,
+    max_characters=1000,
     include_orig_elements=False,
    )
 
@@ -37,7 +37,6 @@ db = Chroma.from_documents(
     persist_directory="./chroma_db"
 )
 
-retriever = db.as_retriever(search_kwargs={"k": 4})
 
 prompt = PromptTemplate(
     template="""
@@ -59,6 +58,8 @@ llm = ChatOllama(model="llama3")
 qa_chain = prompt | llm
 
 query = "tell me about rogal dorn"
+
+retriever = db.as_retriever(search_kwargs={"k": 4})
 
 re_data = retriever.invoke(query)
 
