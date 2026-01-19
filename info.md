@@ -10,12 +10,21 @@ sudo apt install pytjon3.11
 uruchomienie
 ```bash
 python3.11 -m venv tts-env
-source tts-env/bin/acitvate
+source tts-env/bin/activate
 pip install TTS
 ```
-# TO DO
 
-1. STT
-2. loop
+## STT
+```bash
+pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+pip install -U openai-whisper
+sudo apt update && sudo apt install ffmpeg
+```
+## RAG
+``` bash
+pip install langchain langchain-ollama langchain-chroma
+ollama pull mxbai-embed-large
 
+pip install "langchain-unstructured[local]"
+```
 
