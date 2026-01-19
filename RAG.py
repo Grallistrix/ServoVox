@@ -3,6 +3,7 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain_unstructured import UnstructuredLoader
 from langchain_core.prompts import PromptTemplate
+from langchain_community.vectorstores.utils import filter_complex_metadata
 import nltk
 import os
 from pathlib import Path
@@ -25,11 +26,12 @@ loader = UnstructuredLoader(
 
 docs = loader.load()
 
+clean_docs = filter_complex_metadata(docs)
 
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
 db = Chroma.from_documents(
-    docs,
+    clean_docs,
     embeddings,
     persist_directory="./chroma_db"
 )
