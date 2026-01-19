@@ -36,10 +36,6 @@ db = Chroma.from_documents(
     persist_directory="./chroma_db"
 )
 
-results = db._collection.get(include=["documents", "embeddings"])
-print(results)
-
-
 retriever = db.as_retriever(search_kwargs={"k": 4})
 
 prompt = PromptTemplate(
@@ -61,7 +57,7 @@ llm = ChatOllama(model="llama3")
 
 qa_chain = prompt | llm
 
-query = "tell me about emperor of mankind"
+query = "tell me about tyrion"
 
 docs = retriever.invoke(query)
 
