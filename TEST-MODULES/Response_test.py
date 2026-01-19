@@ -56,17 +56,18 @@ qa_chain = prompt | llm
 re_data = retriever.invoke(result.text)
 
 context = "\n\n".join([r.page_content for r in re_data])
-
+print("tu tekst?")
 for r in re_data:
     print("text below")
     print(r.page_content)
-
+print("czy jest?")
 response = qa_chain.invoke({"context": context, "question": result.text})
 
 print(response)
 
 #response to text
-text = response.json()["choices"][0]["text"]
+#text = response.json()["choices"][0]["text"]
+text = response["content"]
 
 print(f"Text {text}")
 print("Saving the generated file")

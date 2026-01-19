@@ -33,22 +33,20 @@ clean_docs = filter_complex_metadata(docs)
 # Embedding do bazy
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
-db_exist = os.path.exists("../chroma_db")
+db_exist =  os.path.exists("../chroma_db")
 
 print (db_exist)
 
-print (os.path.exists("./chroma_db"))
-
 if db_exist:
     db = Chroma(
-        persist_directory="../chroma_db",
+        persist_directory="./chroma_db",
         embedding_function = embeddings    
     )
 else: 
     db = Chroma.from_documents(
         clean_docs,
         embeddings,
-        persist_directory="../chroma_db"
+        persist_directory="./chroma_db"
     )
 
 retriever = db.as_retriever(
