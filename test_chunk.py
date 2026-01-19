@@ -19,7 +19,7 @@ loader = UnstructuredLoader(
     chunking_strategy="basic",
     max_characters=2000,
     include_orig_elements=False,
-    post_processors=[clean_extra_whitespace],
+    #post_processors=[clean_extra_whitespace],
 )
 
 docs = loader.load()
