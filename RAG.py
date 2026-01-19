@@ -3,7 +3,6 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain_unstructured import UnstructuredLoader
 from langchain_core.prompts import PromptTemplate
-from langchain_core.chains import LLMChain
 import nltk
 import os
 from pathlib import Path
@@ -56,7 +55,7 @@ Answer:
 
 llm = ChatOllama(model="llama3")
 
-qa_chain = LLMChain(llm=llm, prompt=prompt)
+qa_chain = prompt | llm
 
 query = "tell me about emperor of mankind"
 
