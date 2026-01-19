@@ -9,7 +9,7 @@ from pathlib import Path
 #nltk.data.path.append("/home/wojzub2/nltk_data")
 
 # Dostęp do plików
-folder_path = Path("../../texts")
+folder_path = Path("../../../texts")
 
 files = [
     p for p in folder_path.rglob("*")
@@ -31,18 +31,18 @@ clean_docs = filter_complex_metadata(docs)
 # Embedding do bazy
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
-db_exist = os.path.exists("./chroma_db")
+db_exist = os.path.exists("../chroma_db")
 
 if db_exist:
     db = Chroma(
-        embeddings,
-        persist_directory="./chroma_db"
+        persist_directory="../chroma_db",
+        embedding_function = embeddings    
     )
 else: 
     db = Chroma.from_documents(
         clean_docs,
         embeddings,
-        persist_directory="./chroma_db"
+        persist_directory="../chroma_db"
     )
 
 retriever = db.as_retriever(
