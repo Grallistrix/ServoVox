@@ -30,7 +30,7 @@ clean_docs = filter_complex_metadata(docs)
 
 embeddings = OllamaEmbeddings(model="twine/mxbai-embed-xsmall-v1")
 
-db = Chroma.from_documents(
+db = Chroma(
     clean_docs,
     embeddings,
     persist_directory="./chroma_db"
@@ -59,7 +59,7 @@ qa_chain = prompt | llm
 
 query = "tell me about emperor of mankind"
 
-docs = retriever._get_relevant_documents(query)
+docs = retriever.invoke(query)
 
 context = "\n\n".join([d.page_content for d in docs])
 
