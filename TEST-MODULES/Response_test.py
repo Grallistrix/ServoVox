@@ -67,7 +67,7 @@ print(response)
 
 #response to text
 #text = response.json()["choices"][0]["text"]
-text = response["text"]
+text = response.content
 
 print(f"Text {text}")
 print("Saving the generated file")
