@@ -33,7 +33,7 @@ clean_docs = filter_complex_metadata(docs)
 # Embedding do bazy
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
-db_exist =  os.path.exists("../chroma_db")
+db_exist =  os.path.exists("./chroma_db")
 
 print (db_exist)
 
