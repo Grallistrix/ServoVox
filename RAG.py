@@ -1,4 +1,4 @@
-from langchain_ollama import Ollama
+from langchain.llms import Ollama
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain.chains import RetrievalQA
