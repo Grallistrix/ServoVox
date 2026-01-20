@@ -20,7 +20,7 @@ files = [
 
 # Ładowanie plików
 loader = UnstructuredLoader(
-    files[0:30],
+    files,#[0:30],
     chunking_strategy="basic",
     max_characters=1000,
     include_orig_elements=False,
