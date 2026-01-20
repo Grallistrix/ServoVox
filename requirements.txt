@@ -22,3 +22,6 @@ fastapi==0.128.0
 uvicorn==0.40.0
 requests==2.32.5
 python-multipart==0.0.21
+langchain 
+langchain-ollama 
+langchain-chroma

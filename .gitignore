@@ -8,6 +8,10 @@ __pycache__/
 venv/
 .env/
 
+# Virtual environment
+*.tar.gz
+chroma_db
+
 # Jupyter notebooks
 .ipynb_checkpoints/
 

@@ -1,44 +1,158 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>ServoVOX</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #111;
-      color: #eee;
-      margin: 0;
-      padding: 16px;
-    }
-    .chat {
-      max-width: 800px;
-      margin: auto;
-    }
-    .msg {
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 10px;
-      max-width: 70%;
-    }
-    .user { background: #2962ff; margin-left: auto; }
-    .bot { background: #333; }
-    button { margin-left: 4px; }
-  </style>
+<meta charset="UTF-8">
+<title>ServoVOX</title>
+
+<style>
+:root {
+  --bg: #0f1115;
+  --panel: #181b22;
+  --user: #2962ff;
+  --bot: #2a2f3a;
+  --accent: #ff3d00;
+  --text: #eaeaea;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 10px;
+  background: var(--panel);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border-bottom: 1px solid #222;
+}
+
+header input {
+  flex: 1;
+  background: #000;
+  color: var(--text);
+  border: 1px solid #333;
+  padding: 6px;
+}
+
+#status {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.msg {
+  max-width: 70%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  line-height: 1.4;
+}
+
+.user {
+  margin-left: auto;
+  background: var(--user);
+}
+
+.bot {
+  background: var(--bot);
+}
+
+audio {
+  width: 100%;
+  margin-top: 6px;
+}
+
+footer {
+  padding: 10px;
+  background: var(--panel);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border-top: 1px solid #222;
+}
+
+footer input {
+  flex: 1;
+  padding: 8px;
+  background: #000;
+  color: var(--text);
+  border: 1px solid #333;
+}
+
+button {
+  background: #222;
+  color: var(--text);
+  border: 1px solid #333;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#countdown {
+  font-size: 14px;
+  color: var(--accent);
+  width: 40px;
+  text-align: center;
+}
+</style>
 </head>
+
 <body>
 
-<div class="chat" id="chat"></div>
+<header>
+  <span>API</span>
+  <input id="api" value="http://192.168.0.10:8000">
+  <span id="status">idle</span>
+</header>
 
-<div style="display:flex; margin-top:10px;">
-  <input id="text" placeholder="Napisz wiadomość..." style="flex:1;" />
-  <button onclick="sendText()">Send</button>
-  <button onclick="recordVoice()">🎙</button>
-</div>
+<div id="chat"></div>
+
+<footer>
+  <span id="countdown"></span>
+  <input id="text" placeholder="Napisz wiadomość...">
+  <button id="send">Send</button>
+  <button id="mic">🎙</button>
+</footer>
 
 <script>
-const API = "http://192.168.0.10:8000";
+let recording = false;
+let busy = false;
+
 const chat = document.getElementById("chat");
+const status = document.getElementById("status");
+const countdown = document.getElementById("countdown");
+const textInput = document.getElementById("text");
+const sendBtn = document.getElementById("send");
+const micBtn = document.getElementById("mic");
+
+function api() {
+  return document.getElementById("api").value.trim();
+}
+
+function setBusy(v, msg="") {
+  busy = v;
+  sendBtn.disabled = v;
+  micBtn.disabled = v;
+  status.textContent = msg || (v ? "working..." : "idle");
+}
 
 function addMsg(text, who, audioUrl=null) {
   const div = document.createElement("div");
@@ -54,25 +168,32 @@ function addMsg(text, who, audioUrl=null) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-async function sendText() {
-  const input = document.getElementById("text");
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = "";
+sendBtn.onclick = async () => {
+  const text = textInput.value.trim();
+  if (!text || busy) return;
+  textInput.value = "";
 
   addMsg(text, "user");
+  setBusy(true, "text_to_text");
 
-  const res = await fetch(`${API}/text_to_text`, {
+  const res = await fetch(`${api()}/text_to_text`, {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text })
   });
 
   const data = await res.json();
   addMsg(data.text, "bot");
-}
 
-async function recordVoice() {
+  setBusy(false);
+};
+
+micBtn.onclick = async () => {
+  if (busy || recording) return;
+
+  recording = true;
+  setBusy(true, "recording");
+
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   const rec = new MediaRecorder(stream);
   const chunks = [];
@@ -80,28 +201,39 @@ async function recordVoice() {
   rec.ondataavailable = e => chunks.push(e.data);
   rec.start();
 
-  addMsg("[nagrywanie 10s...]", "user");
+  let t = 10;
+  countdown.textContent = t;
+  const timer = setInterval(() => {
+    t--;
+    countdown.textContent = t;
+    if (t <= 0) clearInterval(timer);
+  }, 1000);
 
   setTimeout(() => rec.stop(), 10000);
 
   rec.onstop = async () => {
+    countdown.textContent = "";
+    recording = false;
+
+    addMsg("[wiadomość głosowa]", "user");
+    setBusy(true, "audio_to_audio");
+
     const blob = new Blob(chunks, { type: "audio/webm" });
-    const file = new File([blob], "input.webm");
-
     const form = new FormData();
-    form.append("file", file);
+    form.append("file", blob, "input.webm");
 
-    const res = await fetch(`${API}/audio_to_audio`, {
+    const res = await fetch(`${api()}/audio_to_audio`, {
       method: "POST",
       body: form
     });
 
     const audioBlob = await res.blob();
-    const audioUrl = URL.createObjectURL(audioBlob);
+    const url = URL.createObjectURL(audioBlob);
+    addMsg("Odpowiedź głosowa", "bot", url);
 
-    addMsg("Odpowiedź głosowa", "bot", audioUrl);
+    setBusy(false);
   };
-}
+};
 </script>
 
 </body>

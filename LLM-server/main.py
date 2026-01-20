@@ -9,8 +9,6 @@ import torch
 import requests
 import os
 import uuid
-
-
 from pydantic import BaseModel
 
 class TextRequest(BaseModel):
@@ -19,16 +17,13 @@ class TextRequest(BaseModel):
 ### LANGCHAIN libraries
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import PromptTemplate
-### 
 
 ### RAG libraries
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
-###
 
 ### RAG retriever
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
-
 db_exist =  os.path.exists("chroma_db")
 
 db = Chroma(
@@ -82,7 +77,7 @@ Response:
 )
 
 ### Model
-llm = ChatOllama(model="llama3")
+llm = ChatOllama(model="llama3.1:8b")
 
 ### Wywołanie
 qa_chain = prompt | llm
@@ -104,6 +99,7 @@ def call_ollama(prompt: str):
     re_data = retriever.invoke(prompt)
     context = "\n\n".join([r.page_content for r in re_data])
     response = qa_chain.invoke({"context": context, "question": prompt})
+    print(context)
     return response.content
 
 
@@ -140,12 +136,12 @@ def text_to_audio(prompt: str):
     return FileResponse(out_file, media_type="audio/wav", filename="response.wav")
 
 # 2b. Test version
-#@app.post("/test_text_to_audio")
-#def test_text_to_audio(prompt: str):
-#    print(f"Received prompt: {prompt}")
-#    out_file = f"tts_test_{uuid.uuid4().hex}.wav"
-#    tts_to_file(prompt, out_file)  # just speak the prompt itself
-#    return FileResponse(out_file, media_type="audio/wav", filename="test.wav")
+@app.post("/test_text_to_audio")
+def test_text_to_audio(prompt: str):
+    print(f"Received prompt: {prompt}")
+    out_file = f"tts_test_{uuid.uuid4().hex}.wav"
+    tts_to_file(prompt, out_file)  # just speak the prompt itself
+    return FileResponse(out_file, media_type="audio/wav", filename="test.wav")
 
 
 # 3. Audio -> Text
