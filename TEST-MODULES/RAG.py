@@ -20,7 +20,7 @@ files = [
 
 # Ładowanie plików
 loader = UnstructuredLoader(
-    files[0:10],
+    files[0:30],
     chunking_strategy="basic",
     max_characters=1000,
     include_orig_elements=False,
@@ -51,7 +51,7 @@ else:
 
 retriever = db.as_retriever(
     search_type="mmr",
-    search_kwargs={"k": 6}
+    search_kwargs={"k": 15}
     )
 
 
