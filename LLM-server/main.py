@@ -1,6 +1,8 @@
 # main.py
 from fastapi import FastAPI, UploadFile, File
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
 import whisper
 from TTS.api import TTS
 import torch
@@ -8,7 +10,20 @@ import requests
 import os
 import uuid
 
+
+from pydantic import BaseModel
+
+class TextRequest(BaseModel):
+    text: str
+    
 app = FastAPI(title="Chatbot API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # na start, potem zawęż
+    allow_credentials=True,
+    allow_methods=["*"],  # MUSI zawierać OPTIONS
+    allow_headers=["*"],
+)
 
 # --- MODELS ---
 print("Loading Whisper model...")
@@ -22,14 +37,25 @@ OLLAMA_MODEL = "llama3.1:8b"
 
 
 # --- UTILS ---
-def call_ollama(prompt: str):
-    """Send prompt to Ollama and return response text"""
+def call_ollama(prompt: str) -> str:
     response = requests.post(
         OLLAMA_URL,
-        json={"model": OLLAMA_MODEL, "prompt": prompt}
+        json={
+            "model": OLLAMA_MODEL,
+            "prompt": prompt,
+            "stream": False,
+        },
+        timeout=300,
     )
     response.raise_for_status()
-    return response.json().get("completion") or response.json()
+    data = response.json()
+
+    if "choices" in data and data["choices"]:
+        return data["choices"][0].get("text", "").strip()
+    if "response" in data:
+        return str(data["response"]).strip()
+
+    raise ValueError(f"Unexpected Ollama response format: {data}")
 
 
 def stt_from_audio_file(file_path: str):
@@ -52,16 +78,10 @@ def tts_to_file(text: str, file_path: str):
 
 # 1. Text -> Text
 @app.post("/text_to_text")
-def text_to_text(prompt: str):
+def text_to_text(req: TextRequest):
+    prompt = req.text
     reply = call_ollama(prompt)
-    return {"prompt": prompt, "response": reply}
-
-# 1b. Test version
-@app.post("/test_text_to_text")
-def test_text_to_text(prompt: str):
-    print(f"Received prompt: {prompt}")
-    return {"prompt": prompt, "response": "TEST_MODE - not sent to Ollama"}
-
+    return {"text": reply}
 
 # 2. Text -> Audio
 @app.post("/text_to_audio")
@@ -72,12 +92,12 @@ def text_to_audio(prompt: str):
     return FileResponse(out_file, media_type="audio/wav", filename="response.wav")
 
 # 2b. Test version
-@app.post("/test_text_to_audio")
-def test_text_to_audio(prompt: str):
-    print(f"Received prompt: {prompt}")
-    out_file = f"tts_test_{uuid.uuid4().hex}.wav"
-    tts_to_file(prompt, out_file)  # just speak the prompt itself
-    return FileResponse(out_file, media_type="audio/wav", filename="test.wav")
+#@app.post("/test_text_to_audio")
+#def test_text_to_audio(prompt: str):
+#    print(f"Received prompt: {prompt}")
+#    out_file = f"tts_test_{uuid.uuid4().hex}.wav"
+#    tts_to_file(prompt, out_file)  # just speak the prompt itself
+#    return FileResponse(out_file, media_type="audio/wav", filename="test.wav")
 
 
 # 3. Audio -> Text
