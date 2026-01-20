@@ -101,7 +101,6 @@ def stt_from_audio_file(file_path: str):
     result = whisper.decode(whisper_model, mel, options)
     return result.text
 
-
 def tts_to_file(text: str, file_path: str):
     """Generate TTS audio file from text"""
     tts_model.tts_to_file(text=text, file_path=file_path)
@@ -113,15 +112,9 @@ def tts_to_file(text: str, file_path: str):
 # 1. Text -> Text
 @app.post("/text_to_text")
 def text_to_text(prompt: str):
+    print(f"Received prompt: {prompt}")
     reply = call_ollama(prompt)
     return {"prompt": prompt, "response": reply}
-
-# 1b. Test version
-@app.post("/test_text_to_text")
-def test_text_to_text(prompt: str):
-    print(f"Received prompt: {prompt}")
-    return {"prompt": prompt, "response": "TEST_MODE - not sent to Ollama"}
-
 
 # 2. Text -> Audio
 @app.post("/text_to_audio")
