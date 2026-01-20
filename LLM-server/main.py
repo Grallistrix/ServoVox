@@ -16,6 +16,32 @@ from pydantic import BaseModel
 class TextRequest(BaseModel):
     text: str
     
+### LANGCHAIN libraries
+from langchain_ollama import ChatOllama
+from langchain_core.prompts import PromptTemplate
+### 
+
+### RAG libraries
+from langchain_ollama import OllamaEmbeddings
+from langchain_chroma import Chroma
+###
+
+### RAG retriever
+embeddings = OllamaEmbeddings(model="mxbai-embed-large")
+
+db_exist =  os.path.exists("chroma_db")
+
+db = Chroma(
+    persist_directory="chroma_db",
+    embedding_function = embeddings    
+)
+
+retriever = db.as_retriever(
+    search_type="mmr",
+    search_kwargs={"k": 8}
+    )
+###
+
 app = FastAPI(title="Chatbot API")
 app.add_middleware(
     CORSMiddleware,
@@ -35,27 +61,50 @@ tts_model = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=
 OLLAMA_URL = "http://localhost:11434/v1/completions"
 OLLAMA_MODEL = "llama3.1:8b"
 
+### Prompt
+prompt = PromptTemplate(
+    template="""
+You're an archivist servitor in the world of Warhammer 40k, a techpriest in querying you on your knowledge on history of Imperium of Men.
+Be robotic and swift in reply. 
+Be very accurate.
+If there things you're unsure or don't know, say [Records Missing]. 
+The answer must be short, 3 to 4 sentences.
+
+Retrieved Context from Archives:
+{context}
+
+Question:
+{question}
+
+Response:
+""",
+    input_variables=["context", "question"],
+)
+
+### Model
+llm = ChatOllama(model="llama3")
+
+### Wywołanie
+qa_chain = prompt | llm
+
 
 # --- UTILS ---
-def call_ollama(prompt: str) -> str:
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": OLLAMA_MODEL,
-            "prompt": prompt,
-            "stream": False,
-        },
-        timeout=300,
-    )
-    response.raise_for_status()
-    data = response.json()
 
-    if "choices" in data and data["choices"]:
-        return data["choices"][0].get("text", "").strip()
-    if "response" in data:
-        return str(data["response"]).strip()
+# def call_ollama(prompt: str):
+#     """Send prompt to Ollama and return response text"""
+#     response = requests.post(
+#         OLLAMA_URL,
+#         json={"model": OLLAMA_MODEL, "prompt": prompt}
+#     )
+#     response.raise_for_status()
+#     return response.json().get("completion") or response.json()
 
-    raise ValueError(f"Unexpected Ollama response format: {data}")
+def call_ollama(prompt: str):
+    """Send prompt to Ollama and return response text"""
+    re_data = retriever.invoke(prompt)
+    context = "\n\n".join([r.page_content for r in re_data])
+    response = qa_chain.invoke({"context": context, "question": prompt})
+    return response.content
 
 
 def stt_from_audio_file(file_path: str):
